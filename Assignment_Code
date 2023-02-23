@@ -55,7 +55,7 @@ VALUES
 (59433872, 'Eckhart', 'Tolle', 'German', 1948-02-16),
 (28436540, 'Timothy', 'Ferriss', 'American', 1977-07-20),
 (94024751, 'Eric', 'Ries', 'American', 1978-09-22),
-(62442834, 'Rosamund', 'Stone Zander', 'American', None),
+(62442834, 'Rosamund', 'Stone Zander', 'American', 1942-07-02),
 (62423834, 'Ben', 'Zander', 'American', 1939-03-08),
 (86143495, 'Mark', 'Manson', 'American', 1984-03-09),
 (17465328, 'Marie', 'Kondo', 'Japanese', 1984-10-09),
@@ -127,7 +127,7 @@ VALUES
 ('Natalie Wright', 'natalie.wright@mail.utoronto.ca', 13),
 ('William Baker', 'william.baker@mail.utoronto.ca', 5);
 
-INSERT INTO Wrote(user_name, book_id, score)
+INSERT INTO Rating(user_name, book_id, score)
 VALUES
 ('Jim Bobby', 458278, 9),
 ('Jim Bobby', 902929, 10),
@@ -211,5 +211,5 @@ of the book(s) in question";
 SELECT "Query k: The e-mails of all users along with the title of
 their highest rated book";
 
-
+--yerkjfrjewjfgfbfgjfbhrgjobfrhkrgonbhnjhbjhihubj hiuhbhj 
 --Your answer here
