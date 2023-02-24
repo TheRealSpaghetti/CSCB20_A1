@@ -1,5 +1,5 @@
 ---Student Name Michelle Guo  Student Number: 1006655219
----Student Name In Kim  Student Number: 69696969 <-- Fill this in
+---Student Name In Kim  Student Number: 1007757973
 ---Student Name Leon Lee  Student Number: 1007686121
 --for some reason, SQLite often has foreign key constraints off by
 --default, so we're goign to turn them back on
@@ -23,9 +23,7 @@ CREATE TABLE Author(
    given_name TEXT,
    family_name TEXT,
    nationality TEXT,
-   date_of_birth DATE,
-   CHECK(id > 0),
-   PRIMARY_KEY(id)
+   date_of_birth DATE
 );
 CREATE TABLE Book(
    id INTEGER,
@@ -33,32 +31,22 @@ CREATE TABLE Book(
    subtitle TEXT,
    date_of_publication DATE,
    publisher TEXT,
-   num_pages INTEGER,
-   CHECK(id > 0 and num_pages > 0),
-   PRIMARY_KEY(id)
+   num_pages INTEGER
 );
 CREATE TABLE Reader(
    user_name TEXT,
    e_mail TEXT,
-   reading_goal INTEGER,
-   CHECK(reading_goal > 0),
-   PRIMARY_KEY(user_name)
+   reading_goal INTEGER
 );
-
 CREATE TABLE Rating(
    user_name TEXT,
    book_id INTEGER,
    score INTEGER
-   CHECK(0 <= score and score <= 10 and book_id > 0),
-   PRIMARY_KEY(user_name, book_id, score)
 );
 CREATE TABLE Wrote(
    book_id INTEGER,
-   author_id INTEGER,
-   CHECK(book_id > 0 and author_id >0),
-   PRIMARY_KEY(book_id, author_id)
+   author_id INTEGER
 );
-
 ---INSERTING DATA HERE
 INSERT INTO Author(id, given_name, family_name, nationality, date_of_birth)
 VALUES
@@ -209,82 +197,6 @@ CREATE VIEW d AS
   SELECT title from c;
 SELECT * from d;
 
-SELECT "------------------------";
-SELECT "Query e: The e-mails of all users who rated books by ";
-CREATE VIEW bookSelection AS SELECT * FROM Book JOIN Wrote
-   WHERE Book.id = Wrote.book_id;
-CREATE VIEW authorBook AS SELECT * FROM Author JOIN bookSelection
-   WHERE Author.id = bookSelection.author_id;
-CREATE VIEW octBooks AS SELECT * FROM authorBook
-   WHERE authorBook.given_name = 'Octavia' and authorBook.family_name = 'Butler';
-CREATE VIEW users AS SELECT * FROM Reader JOIN Rating
-   WHERE Reader.user_name = Rating.user_name; 
-CREATE VIEW query AS SELECT * FROM octBooks JOIN users
-   WHERE octBooks.book_id = users.book_id; 
-SELECT e_mail FROM query;
-
-SELECT "------------------------";
-SELECT "Query f: The e-mails of all users who rated books by 
-other than her book ";
-CREATE VIEW toDelete AS SELECT * FROM query WHERE query.title = 'Kindred';
-CREATE VIEW answer AS SELECT * FROM query EXCEPT SELECT * FROM toDelete;
-SELECT e_mail FROM answer;
-
-SELECT "------------------------";
-SELECT "Query g: The titles of all books published by authors 
-older than ";
-CREATE VIEW octOnly AS
-  SELECT date_of_birth FROM Author WHERE 
-  Author.given_name = 'Octavia' and Author.family_name = 'Butler';
-CREATE VIEW olderAuthors AS
-  SELECT id, given_name, family_name, Author.date_of_birth FROM octOnly JOIN Author WHERE
-  octOnly.date_of_birth > Author.date_of_birth;
-CREATE VIEW olderWrote AS
-  SELECT author_id, book_id, given_name, family_name, date_of_birth FROM Wrote JOIN olderAuthors WHERE
-  Wrote.author_id = olderAuthors.id;
-SELECT title FROM olderWrote JOIN Book WHERE
-  olderWrote.book_id = Book.id;
-
-SELECT "------------------------";
-SELECT "Query h: The user names of all users who rated higher than ";
---Your answer here
-
-SELECT "------------------------";
-SELECT "Query i: The user names of all users whose number of sad reviews is greater than their reading goal";
---Your answer here
-
-SELECT "------------------------";
-SELECT "Query j: The user names of anyone who has given 2 different ratings to the same book, and the title of the book(s) in question";
---Your answer here
-
-SELECT "------------------------";
-SELECT "Query k: The e-mails of all users along with the title of
-their highest rated book";
-CREATE VIEW R1 AS 
-  SELECT * FROM Rating;
-CREATE VIEW DEL AS
-  SELECT R1.user_name, R1.book_id FROM R1 JOIN Rating WHERE
-  R1.user_name = Rating.user_name and R1.score < Rating.score;
-CREATE VIEW UNID AS 
-  SELECT user_name, book_id FROM RATING;
-CREATE VIEW MAXRATING AS
-  SELECT * FROM UNID EXCEPT
-  SELECT * FROM DEL;
-CREATE VIEW MAXBOOK AS
-  SELECT * FROM MAXRATING JOIN BOOK WHERE
-  BOOK.id = MAXRATING.book_id;
-SELECT title, e_mail FROM MAXBOOK JOIN READER WHERE
-  MAXBOOK.user_name = READER.user_name; 
-CREATE VIEW c AS SELECT * FROM scoreQuery JOIN Book
-   WHERE Book.id = scoreQuery.book_id;
-SELECT title from c;
-
-SELECT "Query d: Titles of all books that have at least one review with a score of 10 (without duplicates)";
-CREATE VIEW d AS
-  SELECT title from Book INTERSECT
-  SELECT title from c;
-SELECT * from d;
-
 SELECT "Query e: The e-mails of all users who rated books by ";
 CREATE VIEW bookSelection AS SELECT * FROM Book JOIN Wrote
    WHERE Book.id = Wrote.book_id;
@@ -320,16 +232,28 @@ SELECT title FROM olderWrote JOIN Book WHERE
 
 SELECT "Query h: The user names of all users who rated higher 
 than ";
---Your answer here
+CREATE VIEW Kin AS SELECT * FROM octBooks JOIN Rating 
+  WHERE title = "Kindred" AND octBooks.book_id = Rating.book_id;
+CREATE VIEW Good AS SELECT * FROM octBooks JOIN Rating
+  WHERE title = "Good Omens" AND octBooks.book_id = Rating.book_id;
+CREATE VIEW Joined AS SELECT * FROM Kin JOIN Good
+  WHERE Kin.user_name = Good.user_name AND Kin.score > Good.score;
+SELECT user_name FROM Joined;
 
 SELECT "Query i: The user names of all users whose number of sad
 reviews is greater than their reading goal";
---Your answer here
+SELECT Reader.user_name FROM Reader JOIN Rating
+  ON Reader.user_name = Rating.user_name
+  GROUP BY Reader.user_name
+  HAVING COUNT(Rating.book_id) > Reader.reading_goal;
 
 SELECT "Query j: The user names of anyone who has given 2 
 different ratings to the same book, and the title
 of the book(s) in question";
---Your answer here
+SELECT Rating.user_name, Book.title FROM Rating JOIN Book
+  ON Rating.book_id = Book.id
+  GROUP BY Rating.user_name, Rating.book_id
+  HAVING COUNT(DISTINCT Rating.score) > 1;
 
 SELECT "Query k: The e-mails of all users along with the title of
 their highest rated book";
