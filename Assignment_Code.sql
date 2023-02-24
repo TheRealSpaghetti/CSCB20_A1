@@ -234,4 +234,9 @@ of the book(s) in question";
 SELECT "Query k: The e-mails of all users along with the title of
 their highest rated book";
 
+<<<<<<< HEAD:Assignment_Code
 --Your answer here
+=======
+--yerkjfrjewjfgfbfgjfbhrgjobfrhkrgonbhnjhbjhihubj hiuhbhj 
+--Your answer here
+>>>>>>> 190505b19b563b1437e836c4466feec9f69dd601:Assignment_Code.sql
