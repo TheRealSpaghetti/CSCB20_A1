@@ -1,5 +1,5 @@
 ---Student Name Michelle Guo  Student Number: 1006655219
----Student Name In Kim  Student Number: 69696969 <-- Fill this in
+---Student Name In Kim  Student Number: 1007757973
 ---Student Name Leon Lee  Student Number: 1007686121
 --for some reason, SQLite often has foreign key constraints off by
 --default, so we're goign to turn them back on
@@ -23,8 +23,7 @@ CREATE TABLE Author(
    given_name TEXT,
    family_name TEXT,
    nationality TEXT,
-   date_of_birth DATE,
-   CHECK(id > 0)
+   date_of_birth DATE
 );
 CREATE TABLE Book(
    id INTEGER,
@@ -33,26 +32,21 @@ CREATE TABLE Book(
    date_of_publication DATE,
    publisher TEXT,
    num_pages INTEGER
-   CHECK(id > 0 and num_pages > 0)
 );
 CREATE TABLE Reader(
    user_name TEXT,
    e_mail TEXT,
    reading_goal INTEGER
-   CHECK(reading_goal > 0)
 );
 CREATE TABLE Rating(
    user_name TEXT,
    book_id INTEGER,
    score INTEGER
-   CHECK(0 <= score and score <= 10 and book_id > 0)
 );
 CREATE TABLE Wrote(
    book_id INTEGER,
    author_id INTEGER
-   CHECK(book_id > 0 and author_id >0)
 );
-
 ---INSERTING DATA HERE
 INSERT INTO Author(id, given_name, family_name, nationality, date_of_birth)
 VALUES
@@ -318,7 +312,10 @@ than ";
 
 SELECT "Query i: The user names of all users whose number of sad
 reviews is greater than their reading goal";
---Your answer here
+SELECT Reader.user_name FROM Reader JOIN Rating
+  ON Reader.user_name = Rating.user_name
+  GROUP BY Reader.user_name
+  HAVING COUNT(Rating.book_id) > Reader.reading_goal;
 
 SELECT "Query j: The user names of anyone who has given 2 
 different ratings to the same book, and the title
