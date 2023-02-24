@@ -26,6 +26,7 @@ CREATE TABLE Author(
   PRIMARY KEY(id),
   CHECK(id > 0)
 );
+
 CREATE TABLE Book(
   id INTEGER,
   title TEXT,
@@ -36,6 +37,7 @@ CREATE TABLE Book(
   PRIMARY KEY(id),
   CHECK(id > 0 and num_pages > 0),
 );
+
 CREATE TABLE Reader(
   user_name TEXT,
   e_mail TEXT,
